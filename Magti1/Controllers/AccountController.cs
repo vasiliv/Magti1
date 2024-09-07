@@ -75,10 +75,10 @@ namespace Magti1.Controllers
             }
             return View();
         }
-
-        public async Task<IActionResult> LoginOut()
+        public async Task<IActionResult> LogOut()
         {
-            return View();
+            await _signInManager.SignOutAsync();            
+            return RedirectToAction("Login", "Account");
         }
     }
 }
