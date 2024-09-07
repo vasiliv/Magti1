@@ -1,7 +1,10 @@
+using Magti1.Data;
 using Magti1.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace Magti1.Controllers
 {
@@ -9,17 +12,50 @@ namespace Magti1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _context;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
+            var numbers = _context.BoughtNumbers.ToList();
+            return View(numbers);
+        }
+        [HttpGet]
+        public IActionResult Create()
+        {
+            ViewBag.numbers = new SelectList(_context.FreeNumbers, "Id", "PhoneNumber");
             return View();
         }
+        [HttpPost]
+        public IActionResult Create(FreeNumber freeNumber)
+        {
+            if (ModelState.IsValid)
+            {
+                //if (_context.BoughtNumbers.Count() >= 10)
+                //{
 
+                //}
+                var selectedNumber = _context.FreeNumbers.Find(freeNumber.Id);
+
+                var boughtNumber = new BoughtNumber
+                {
+                    PhoneNumber = selectedNumber.PhoneNumber,
+                    //to get user id of currently logged user
+                    ApplicationUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))
+                };
+                _context.BoughtNumbers.Add(boughtNumber);
+                //Remove bought number from freenumbers list
+                _context.FreeNumbers.Remove(selectedNumber);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            ViewBag.numbers = new SelectList(_context.FreeNumbers, "Id", "PhoneNumber");
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

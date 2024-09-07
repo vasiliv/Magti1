@@ -1,0 +1,27 @@
+﻿@model Magti1.Models.FreeNumber; 
+
+<h2>Choose desired number: </h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <select id="ddlCustomers" asp-for="Id" class="form-control" asp-items="@ViewBag.numbers"></select>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Buy" class="btn btn-primary" />
+    </div>
+    <br />
+    <a class="btn btn-primary" asp-action="Index">
+        Your Phone Numbers
+    </a>
+</form>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#ddlCustomers").select2();
+        });
+    </script>
+}
