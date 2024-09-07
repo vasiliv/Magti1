@@ -1,0 +1,5 @@
+﻿Username / Personnal Id : 01002001291
+Pass: Rafter77 + 
+
+AccountController : For Login, Register, Logout
+Homecontroller: For buying phone numbers
