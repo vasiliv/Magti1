@@ -27,5 +27,8 @@ namespace Magti1.Models
         [Display(Name = "Confirm password")]
         [DataType(DataType.Password)]
         public string? ConfirmPassword { get; set; }
+        public string? ImageFileName { get; set; }
+        [Display(Name = "Image of your personnal id")]
+        public IFormFile ImageFile { get; set; }
     }
 }
