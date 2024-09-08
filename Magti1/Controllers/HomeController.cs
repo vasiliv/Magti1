@@ -21,7 +21,12 @@ namespace Magti1.Controllers
 
         public IActionResult Index()
         {
-            var numbers = _context.BoughtNumbers.ToList();
+            //to get user id of currently logged user
+            int ApplicationUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var numbers = _context.BoughtNumbers
+                .Where(b => b.ApplicationUserId == ApplicationUserId)
+                .ToList();
             return View(numbers);
         }
         [HttpGet]
