@@ -73,6 +73,16 @@ namespace Magti1.Migrations
                         {
                             Id = 3,
                             PhoneNumber = 593146165
+                        },
+                        new
+                        {
+                            Id = 4,
+                            PhoneNumber = 593146166
+                        },
+                        new
+                        {
+                            Id = 5,
+                            PhoneNumber = 593146167
                         });
                 });
 

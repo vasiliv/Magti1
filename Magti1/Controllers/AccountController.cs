@@ -8,10 +8,14 @@ namespace Magti1.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        private readonly IWebHostEnvironment _environment;
+        public AccountController(SignInManager<ApplicationUser> signInManager,
+                                UserManager<ApplicationUser> userManager,
+                                IWebHostEnvironment environment)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _environment = environment;
         }
 
         public IActionResult Index()
@@ -49,6 +53,15 @@ namespace Magti1.Controllers
         {
             if (ModelState.IsValid)
             {
+                string newFileName = DateTime.Now.ToString("yyyyMMddHHmmss");
+                newFileName += Path.GetExtension(model.ImageFile!.FileName);
+
+                string imageFullPath = _environment.WebRootPath + "/images/" + newFileName;
+
+                using (var stream = System.IO.File.Create(imageFullPath))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
                 //perform registration
                 ApplicationUser user = new()
                 {
@@ -58,8 +71,11 @@ namespace Magti1.Controllers
                     PersonalIDNumber = model.PersonalIDNumber,
                     Email = model.Email,
                     Address = model.Address,
+                    ImageFileName = newFileName
                 };
+
                 var result = await _userManager.CreateAsync(user, model.Password!);
+
                 //move to the next page
                 if (result.Succeeded)
                 {
@@ -77,7 +93,7 @@ namespace Magti1.Controllers
         }
         public async Task<IActionResult> LogOut()
         {
-            await _signInManager.SignOutAsync();            
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
     }

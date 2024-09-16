@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Magti1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240905174612_Navigation")]
-    partial class Navigation
+    [Migration("20240916135159_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,16 @@ namespace Magti1.Migrations
                         {
                             Id = 3,
                             PhoneNumber = 593146165
+                        },
+                        new
+                        {
+                            Id = 4,
+                            PhoneNumber = 593146166
+                        },
+                        new
+                        {
+                            Id = 5,
+                            PhoneNumber = 593146167
                         });
                 });
 

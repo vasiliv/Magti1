@@ -24,7 +24,9 @@ namespace Magti1.Data
             builder.Entity<FreeNumber>().HasData(
                 new FreeNumber { Id = 1, PhoneNumber = 595604040 },
                 new FreeNumber { Id = 2, PhoneNumber = 595580005 },
-                new FreeNumber { Id = 3, PhoneNumber = 593146165 }
+                new FreeNumber { Id = 3, PhoneNumber = 593146165 },
+                new FreeNumber { Id = 4, PhoneNumber = 593146166 },
+                new FreeNumber { Id = 5, PhoneNumber = 593146167 }
             );
 
             builder.Entity<ApplicationUser>()
