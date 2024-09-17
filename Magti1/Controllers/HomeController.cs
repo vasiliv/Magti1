@@ -26,7 +26,8 @@ namespace Magti1.Controllers
 
             var numbers = _context.BoughtNumbers
                 .Where(b => b.ApplicationUserId == ApplicationUserId)
-                .ToList();
+                .ToList();            
+            ViewBag.BoughtNumbers = numbers.Count();
             return View(numbers);
         }
         [HttpGet]

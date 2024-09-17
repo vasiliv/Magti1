@@ -3,8 +3,15 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+@if (ViewBag.BoughtNumbers > 0)
+{
+    <h2>List of your phone numbers: </h2>
+}
+else
+{
+    <h2>Please buy phone numbers: </h2>
+}
 
-<H2>List of your phone numbers: </H2>
 
 @foreach (var number in Model)
 {
