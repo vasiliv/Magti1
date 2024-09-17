@@ -3,15 +3,21 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-@if (ViewBag.BoughtNumbers > 0)
+@if (ViewBag.BoughtNumbers == 0)
 {
-    <h2>List of your phone numbers: </h2>
+    <h2>Please buy phone numbers: </h2>
+    
 }
 else
 {
-    <h2>Please buy phone numbers: </h2>
+    <h2>List of your phone numbers: </h2>
 }
-
+@if (ViewBag.BoughtNumbers > 10)
+{
+    <script>
+        alert('You can not buy more than 10 phone numbers'); 
+    </script>    
+}
 
 @foreach (var number in Model)
 {
