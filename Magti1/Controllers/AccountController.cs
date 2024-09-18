@@ -113,6 +113,7 @@ namespace Magti1.Controllers
                 Address = user.Address,
                 //ImageFileName = newFileName
             };
+            ViewData["ImageFileName"] = user.ImageFileName;
             return View(model);
         }
         [HttpPost]        

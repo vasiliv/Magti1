@@ -42,6 +42,9 @@
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="mb-1">
+                <img src="/images/@ViewData["ImageFileName"]" width="150" />
+            </div>
+            <div class="mb-1">
                 <label asp-for="ImageFile"></label>
                 <input asp-for="ImageFile" class="form-control" />
                 <span asp-validation-for="ImageFile" class="text-danger"></span>
