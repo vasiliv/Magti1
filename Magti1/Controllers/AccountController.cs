@@ -96,5 +96,63 @@ namespace Magti1.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
+        public async Task<IActionResult> Edit()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var model = new Register
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                //UserName = user.PersonalIDNumber,
+                PersonalIDNumber = user.PersonalIDNumber,
+                Email = user.Email,
+                Address = user.Address,
+                //ImageFileName = newFileName
+            };
+            return View(model);
+        }
+        [HttpPost]        
+        public async Task<IActionResult> Edit(Register model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Get the currently logged-in user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.UserName = model.PersonalIDNumber;
+            user.Email = model.Email;
+            user.PersonalIDNumber = model.PersonalIDNumber;
+            user.Address = model.Address;
+
+            var result = await _userManager.UpdateAsync(user);            
+            if (result.Succeeded)
+            {
+                // Optionally, sign the user in again to refresh the claims
+                await _userManager.UpdateSecurityStampAsync(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
     }
 }

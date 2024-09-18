@@ -22,11 +22,10 @@ namespace Magti1.Controllers
         public IActionResult Index()
         {
             //to get user id of currently logged user
-            int ApplicationUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
+            int ApplicationUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));            
             var numbers = _context.BoughtNumbers
                 .Where(b => b.ApplicationUserId == ApplicationUserId)
-                .ToList();            
+                .ToList();             
             ViewBag.BoughtNumbers = numbers.Count();
             return View(numbers);
         }
