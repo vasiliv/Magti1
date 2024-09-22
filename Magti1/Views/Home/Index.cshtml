@@ -29,7 +29,15 @@ else
         </ul>
     </div>
 }
-
-<a class="btn btn-primary" asp-action="Create">
-    Buy phone number
-</a>
+<div class="row">
+    <div class="col-2">
+        <a class="btn btn-primary" asp-action="Create">
+            Buy phone number
+        </a>
+    </div>
+    <div class="col-2">
+        <a class="btn btn-info" asp-controller="Account" asp-action="Edit">
+            Edit user
+        </a>
+    </div>
+</div>
