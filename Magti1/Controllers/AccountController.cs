@@ -1,6 +1,7 @@
 ﻿using Magti1.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Magti1.Controllers
 {
@@ -98,6 +99,7 @@ namespace Magti1.Controllers
         }
         public async Task<IActionResult> Edit()
         {
+            // Get the currently logged-in user
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -131,13 +133,29 @@ namespace Magti1.Controllers
             {
                 return NotFound();
             }
+            string newFileName = user.ImageFileName;
+            if (model.ImageFile != null)
+            {
+                newFileName = DateTime.Now.ToString("yyyyMMddHHmmss");
+                newFileName += Path.GetExtension(model.ImageFile.FileName);
 
+                string imageFullPath = _environment.WebRootPath + "/images/" + newFileName;
+
+                using (var stream = System.IO.File.Create(imageFullPath))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
+                //delete the old image
+                string oldImageFullPath = _environment.WebRootPath + "/images/" + user.ImageFileName;
+                System.IO.File.Delete(oldImageFullPath);
+            }
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.UserName = model.PersonalIDNumber;
             user.Email = model.Email;
             user.PersonalIDNumber = model.PersonalIDNumber;
             user.Address = model.Address;
+            user.ImageFileName = newFileName;
 
             var result = await _userManager.UpdateAsync(user);            
             if (result.Succeeded)
