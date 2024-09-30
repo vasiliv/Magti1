@@ -1,4 +1,5 @@
-﻿using Magti1.Models;
+﻿using Magti1.Data;
+using Magti1.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,22 +9,16 @@ namespace Magti1.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        public AdminController(UserManager<ApplicationUser> userManager)
+        private readonly ApplicationDbContext _context;
+        public AdminController(ApplicationDbContext context)
         {
-            _userManager = userManager;
+            _context = context;
         }
-        [Authorize(Roles = "Admin")]
-        //[Authorize]
+        [Authorize(Roles = "Admin")]        
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            //var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = User.Claims
-                                     .Where(c => c.Type == ClaimTypes.Role)
-                                     .Select(c => c.Value)
-                                     .ToList();
-            return View();
+            var users = _context.Users.ToList();
+            return View(users);
         }
     }
 }

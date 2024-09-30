@@ -1,4 +1,43 @@
-﻿@using Microsoft.AspNetCore.Identity
-@model IdentityRole
+﻿<h2>Hello admin</h2>
 
-<h2>Hello admin</h2>
+@* <div class ="row">
+    <div class="col">
+        <a class="btn btn-primary" asp-controller="Products" asp-action="Create"></a>
+    </div>
+    <div class="col">
+    </div>
+</div> *@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>PersonalIDNumber</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Image</th>            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.PersonalIDNumber</td>
+                <td>@item.Email</td>
+                <td>@item.Address</td>
+                <td><img src="/images/@item.ImageFileName" width="100"/></td>
+                
+                @* <td style="white-space:nowrap">
+                    <a class="btn btn-primary btn-sm" asp-controller="Products" asp-action="Edit"
+                        asp-route-id = "@product.Id">Edit</a>
+                    <a class="btn btn-danger btn-sm" asp-controller="Products" asp-action="Delete"
+                       asp-route-id="@product.Id">Delete</a>
+                </td> *@
+            </tr>
+        }
+    </tbody>
+</table>
