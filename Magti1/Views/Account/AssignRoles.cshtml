@@ -1,0 +1,47 @@
+﻿@model Magti1.ViewModels.AssignRolesViewModel
+
+<h2>Assign Roles to Users</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Assign Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.UserName (@user.Email)</td>
+                <td>
+                    <form asp-action="AssignRoleToUser" method="post">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <select name="roleName" class="form-control">
+                            <option value="">-- Select Role --</option>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.Name">@role.Name</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-primary mt-2">Assign Role</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

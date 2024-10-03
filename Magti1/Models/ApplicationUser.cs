@@ -13,6 +13,6 @@ namespace Magti1.Models
         public string? ImageFileName { get; set; }
 
         // Navigation property to access the related orders
-        public ICollection<BoughtNumber> BoughtNumber { get; set; }
+        public virtual ICollection<BoughtNumber> BoughtNumber { get; set; } = [];
     }
 }

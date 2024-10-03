@@ -1,23 +1,19 @@
 ﻿using Magti1.Data;
-using Magti1.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace Magti1.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public AdminController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-        [Authorize(Roles = "Admin")]        
+        //[Authorize(Roles = "Admin")]        
         public async Task<IActionResult> Index()
         {
-            var users = _context.Users.ToList();
+            var users = await context.Users
+                .Include(x => x.BoughtNumber)
+                .ToListAsync();
+
             return View(users);
         }
     }

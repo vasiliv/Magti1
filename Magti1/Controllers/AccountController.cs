@@ -1,10 +1,9 @@
 ﻿using Magti1.Data;
 using Magti1.Models;
+using Magti1.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Security.Claims;
 
 namespace Magti1.Controllers
 {
@@ -14,17 +13,21 @@ namespace Magti1.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IWebHostEnvironment _environment;
         private readonly ApplicationDbContext _context;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+
         public AccountController(SignInManager<ApplicationUser> signInManager,
-                                UserManager<ApplicationUser> userManager,
-                                IWebHostEnvironment environment,
-                                ApplicationDbContext context)
+                                 UserManager<ApplicationUser> userManager,
+                                 IWebHostEnvironment environment,
+                                 ApplicationDbContext context,
+                                 RoleManager<IdentityRole<int>> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _environment = environment;
             _context = context;
+            _roleManager = roleManager;
         }
-
+    
         public IActionResult Index()
         {
             return View();
@@ -38,35 +41,81 @@ namespace Magti1.Controllers
         {
             if (ModelState.IsValid)
             {
-                //perform login
-                //! - not nullable
+
+                // Perform login
                 var result = await _signInManager.PasswordSignInAsync(model.PersonalIDNumber!, model.Password!, model.RememberMe, false);
 
                 if (result.Succeeded)
                 {
                     // Get the currently logged-in user
-                    var user = await _userManager.GetUserAsync(User);                    
-                    
-                    //to get user id of currently logged user
-                    int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                    var user = await _userManager.FindByNameAsync(model.PersonalIDNumber);
 
-                    // Query to join AspNetUserRoles, AspNetRoles, and AspNetUsers
-                    var role = await (from ur in _context.UserRoles
-                                      join r in _context.Roles on ur.RoleId equals r.Id
-                                      where ur.UserId == userId
-                                      select r.Name).FirstOrDefaultAsync();
-
-                    await _userManager.AddToRoleAsync(user, role);
-                    // Check if the user is in a specific role
-                    if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    if (user == null)
                     {
-                        // Redirect to Admin dashboard or perform actions based on Admin role
-                        return RedirectToAction("Index", "Admin");
+                        ModelState.AddModelError("", "User not found");
+                        return View(model);
                     }
-                    return RedirectToAction("Index", "Home");
+
+                    // Get the user's roles (this method is more reliable than querying manually)
+                    var roles = await _userManager.GetRolesAsync(user);
+
+                    if (roles == null || !roles.Any())
+                    {
+                        ModelState.AddModelError("", "User has no roles assigned");
+                        return View(model);
+                    }
+
+                    // Add the user to the first role found (or handle multiple roles as necessary)
+                    var role = roles.FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(role))
+                    {
+                        // Check if the user is in a specific role
+                        if (role == "Admin")
+                        {
+                            return RedirectToAction("Index", "Admin");
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
+                    }
                 }
+
                 ModelState.AddModelError("", "Invalid login attempt");
                 return View(model);
+
+
+
+                ////perform login
+                ////! - not nullable
+                //var result = await _signInManager.PasswordSignInAsync(model.PersonalIDNumber!, model.Password!, model.RememberMe, false);
+
+                //if (result.Succeeded)
+                //{
+                //    // Get the currently logged-in user
+                //    var user = await _userManager.GetUserAsync(User);                    
+
+                //    //to get user id of currently logged user
+                //    int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                //    // Query to join AspNetUserRoles, AspNetRoles, and AspNetUsers
+                //    var role = await (from ur in _context.UserRoles
+                //                      join r in _context.Roles on ur.RoleId equals r.Id
+                //                      where ur.UserId == userId
+                //                      select r.Name).FirstOrDefaultAsync();
+
+                //    await _userManager.AddToRoleAsync(user, role);
+                //    // Check if the user is in a specific role
+                //    if (await _userManager.IsInRoleAsync(user, "Admin"))
+                //    {
+                //        // Redirect to Admin dashboard or perform actions based on Admin role
+                //        return RedirectToAction("Index", "Admin");
+                //    }
+                //    return RedirectToAction("Index", "Home");
+                //}
+                //ModelState.AddModelError("", "Invalid login attempt");
+                //return View(model);
             }
             return View();
         }
@@ -129,11 +178,13 @@ namespace Magti1.Controllers
             }
             return View();
         }
+       
         public async Task<IActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
+       
         public async Task<IActionResult> Edit()
         {
             // Get the currently logged-in user
@@ -209,6 +260,49 @@ namespace Magti1.Controllers
             }
 
             return View(model);
+        }
+
+        public async Task<IActionResult> AssignRoles()
+        {
+            var users = await _userManager.Users.ToListAsync(); // Use ToListAsync() to get users
+            var roles = await _roleManager.Roles.ToListAsync(); // Use ToListAsync() to get roles
+
+            var model = new AssignRolesViewModel
+            {
+                Users = users,
+                Roles = roles
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignRoleToUser(string userId, string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound($"User with ID '{userId}' not found.");
+            }
+
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                ModelState.AddModelError("", "Role does not exist.");
+                return RedirectToAction(nameof(AssignRoles));
+            }
+
+            // Assign the role to the user
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = $"Role '{roleName}' assigned to user '{user.UserName}'.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = $"Failed to assign role '{roleName}' to user '{user.UserName}'.";
+            }
+
+            return RedirectToAction(nameof(AssignRoles));
         }
     }
 }

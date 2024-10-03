@@ -8,6 +8,6 @@
         public int ApplicationUserId { get; set; }
 
         // Navigation property to access the related customer
-        public ApplicationUser ApplicationUser { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }
