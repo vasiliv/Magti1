@@ -16,7 +16,8 @@
             <th>PersonalIDNumber</th>
             <th>Email</th>
             <th>Address</th>
-            <th>Image</th>            
+            <th>Image</th>    
+            <th>Bought Numbers</th>
         </tr>
     </thead>
     <tbody>
@@ -29,8 +30,23 @@
                 <td>@item.PersonalIDNumber</td>
                 <td>@item.Email</td>
                 <td>@item.Address</td>
-                <td><img src="/images/@item.ImageFileName" width="100"/></td>
-                
+                <td><img src="/images/@item.ImageFileName" width="100" /></td>
+                <td>
+                    @if (item.BoughtNumber != null)
+                    {
+                        <ul>
+                            @foreach (var boughtNumber in item.BoughtNumber)
+                            {
+                                <li>@boughtNumber.PhoneNumber</li>
+                            }
+                        </ul>
+                    }
+
+                    else
+                    {
+                        <span>No Bought Numbers</span>
+                    }
+                </td>
                 @* <td style="white-space:nowrap">
                     <a class="btn btn-primary btn-sm" asp-controller="Products" asp-action="Edit"
                         asp-route-id = "@product.Id">Edit</a>

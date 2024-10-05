@@ -3,6 +3,7 @@ using Magti1.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Magti1.Controllers
@@ -17,7 +18,8 @@ namespace Magti1.Controllers
         [Authorize(Roles = "Admin")]        
         public async Task<IActionResult> Index()
         {
-            var users = _context.Users.ToList();
+            var users = await _context.Users.Include(u => u.BoughtNumber).ToListAsync();
+
             return View(users);
         }
     }
